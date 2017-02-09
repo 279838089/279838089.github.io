@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Our Love Story</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<style type="text/css">
+		@font-face {
+			font-family: digit;
+			src: url('digital-7_mono.ttf') format("truetype");
+		}
+	</style>
+	<link href="css/default.css" type="text/css" rel="stylesheet">
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/garden.js"></script>
+    <script type="text/javascript" src="js/functions.js"></script>
+</head>
+
+<body>
+	<div id="mainDiv">
+		<div id="content">
+			<div id="code">
+				<span class="comments">/**</span><br />
+				<span class="space"/><span class="comments">* 嗯，给你的第一封情书,</span><br />
+				<span class="space"/><span class="comments">* 嗯，用我的的方式.</span><br />
+				<span class="space"/><span class="comments">*/</span><br />
+				Boy i = <span class="keyword">new</span> Boy(<span class="string">"yK"</span>);<br />
+				Girl u = <span class="keyword">new</span> Girl(<span class="string">"Sophia"</span>);<br />
+				<span class="comments">// 2016.05.17 14:35, I told you I love you. </span><br />
+				i.love(u);<br />
+				<span class="comments">// 15:19, you accepted and became my girlfriend eversince.</span><br />
+				u.accepted();<br />
+				<span class="keyword">while</span>(a lot of problems appear)<br />
+				<span class="keyword">if</span>(you entered my world){<br />
+				I will always love you<br />
+				last a lifetime }<br/>
+				<span class="keyword">//此后还会出现许许多多不同的问题分歧</span><br />
+				<span class="keyword">//但只要你进入了我的世界</span><br />
+				<span class="keyword">//我就会永远地爱你</span><br />
+				<span class="keyword">//过完这不长不短的一生</span><br />
+				
+				<span class="keyword">//以前一直不知道自己想找一个怎样的女生，后来遇到你，慢慢明白了许多</span><br />
+				<span class="keyword">//一个会让我收敛，让我知冷暖，让我善良，让我生活检点，让我知道生活除了功利还有感情</span><br />
+				
+				<span class="keyword"></span><br />
+				<span class="keyword">2016-07-26 你陪我打电话，一起跑完了我的第一个10km</span><br />
+				<span class="keyword">2016-07-30 你陪我过的第一个生日</span><br />
+				<span class="keyword">2016-08-09 我们一起过的第一个情人节</span><br />
+        <span class="keyword">2016-08-20 我们一起看的第一个奥运会</span><br />
+        <span class="keyword">2016-08-25 我们一起100天纪念日</span><br />
+        <span class="keyword">2016-08-27 我们一起去亲戚家吃饭</span><br />
+        <span class="keyword">2016-11-17 我们已经两周没见，特别思念</span><br />
+        <span class="keyword">2017-01-01 我们度过的第一个跨年</span><br />
+		<span class="keyword">2017-01-14 我们去买新衣服，买了情侣装</span><br />
+			</div>
+			<div id="loveHeart">
+				<canvas id="garden"></canvas>
+				<div id="words">
+					<div id="messages">
+						Sophia, I have fallen in love with you for
+						<div id="elapseClock"></div>
+					</div>
+					<div id="loveu">
+						Love u forever and ever.<br/>
+						<div class="signature">- yK</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="copyright">
+			Github <br />
+			<a href='flower.html'  target="_black">Flower</a> <br />
+      <a href=''  target="_black">LOVE</a> <br />
+		</div>
+	</div>
+	<script type="text/javascript">
+		var offsetX = $("#loveHeart").width() / 2;
+		var offsetY = $("#loveHeart").height() / 2 - 55;
+		var together = new Date();
+		together.setFullYear(2016, 4, 17); //mth:用整数表示月份，从0-11(1月到12月)
+		together.setHours(14); //hh:小时数，从0（午夜）到23（晚11点）
+		together.setMinutes(18); //mm:分钟数，从0到59的整数
+		together.setSeconds(0);
+		together.setMilliseconds(0);
+		
+		if (!document.createElement('canvas').getContext) {
+			var msg = document.createElement("div");
+			msg.id = "errorMsg";
+			msg.innerHTML = "Your browser doesn't support HTML5!<br/>Recommend use Chrome 14+/IE 9+/Firefox 7+/Safari 4+"; 
+			document.body.appendChild(msg);
+			$("#code").css("display", "none")
+			$("#copyright").css("position", "absolute");
+			$("#copyright").css("bottom", "10px");
+		    document.execCommand("stop");
+		} else {
+			setTimeout(function () {
+				startHeartAnimation();
+			}, 5000);
+
+			timeElapse(together);
+			setInterval(function () {
+				timeElapse(together);
+			}, 500);
+
+			adjustCodePosition();
+			$("#code").typewriter();
+		}
+	</script>
+</body>
+</html>
