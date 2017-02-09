@@ -1,9 +1,9 @@
 # Basic
 title: Leo
-subtitle: A blog-orientation theme for Jekyll
-welcome_message: <a href="https://github.com/onevcat/vno-jekyll" target="_blank">Download the theme</a>
-description: Vno Jekyll is a port of my Ghost theme vno.
-creator: <a href="http://onev.cat">@onevcat</a>
+subtitle: L->O->S
+welcome_message: 享受互联网带来的改变，接收新事物带来的洗礼
+description: Laravel Python developer
+#creator: <a href="http://onev.cat">@onevcat</a>
 
 url: ""
 
@@ -22,7 +22,7 @@ blog_button:
 
 # Navigation buttons in the front page.
 nav:
-    - {title: Projects, description: My Projects, url: 'http://project.onevcat.com'}
+    #- {title: Projects, description: My Projects, url: 'http://project.onevcat.com'}
     # - {title: Another Button, description: A button, url: 'http://example.com'}
 
 # Pagination
@@ -37,11 +37,11 @@ comment:
     
 # Social
 social:
-    weibo: onevcat
-    github: onevcat
-    twitter: onevcat
-    gplus: 107108267983477358170
-    mail: onev@onevcat.com
+    weibo: 539378950
+    github: 279838089
+    twitter: 
+    gplus: 
+    mail: 279838089@qq.com
 
 # Google Analytics
 ga:
