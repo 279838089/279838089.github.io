@@ -5,6 +5,8 @@ on:
     branches: [master]
   schedule:
     - cron: '17 1,4,7,10,13,16,19,22 * * *'
+    # Backup trigger 30 minutes later if GitHub drops the first scheduled run.
+    - cron: '47 1,4,7,10,13,16,19,22 * * *'
 permissions:
   contents: read
 concurrency:
@@ -32,6 +34,33 @@ jobs:
           LONGITUDE: '114.0579'
           OUTPUT_MODE: '1'
         run: python render.py
+      - name: Verify PNG and write build summary
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          from PIL import Image
+          from pathlib import Path
+          status = json.loads(Path('site/status.json').read_text(encoding='utf-8'))
+          with Image.open('site/screen.png') as picture:
+              picture.verify()
+          with Image.open('site/screen.png') as picture:
+              assert picture.size == (600, 800), picture.size
+          now = datetime.now(ZoneInfo('Asia/Shanghai'))
+          generated = datetime.fromisoformat(status['generated_at'])
+          age = abs((now - generated).total_seconds())
+          assert age < 1200, f'Stale build timestamp: {status["generated_at"]}'
+          expected = ('normal' if 6 <= generated.hour < 12 else
+                      'mega_x' if 12 <= generated.hour < 18 else 'mega_y')
+          assert status['form'] == expected, (status['form'], expected)
+          print('Generated:', status['generated_at'], 'Form:', status['form'])
+          with open(__import__('os').environ['GITHUB_STEP_SUMMARY'], 'a') as out:
+              out.write('### Kindle dashboard build\n')
+              out.write('- Beijing time: '+status['generated_at']+'\n')
+              out.write('- Sprite: '+status['form']+'\n')
+              out.write('- PNG: 600 x 800\n')
+          PY
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
