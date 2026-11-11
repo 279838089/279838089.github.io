@@ -21,6 +21,8 @@
 
 喷火龙像素素材来自 Pokémon Showdown 原有素材，并非 AI 生成；Pokémon 相关形象版权归原权利人，仅用于个人非商业展示。
 
+**素材预存机制：** 首次成功运行的 GitHub Actions 会下载普通喷火龙、Mega X、Mega Y 的像素 PNG，并通过 `github-actions[bot]` 提交到 `assets/`。之后每次构建首先检查仓库中的 PNG，存在则完全跳过素材联网下载；缺失时才重试。`fetch_sprites.py` 只用于初次填充和后续手动补全。首次自动提交是否成功，可在仓库 `assets/normal.png`、`assets/mega_x.png`、`assets/mega_y.png` 中确认。
+
 ## 发布
 
 GitHub Pages 设置为 **GitHub Actions**。工作流在 master 推送时触发，且每 3 小时计划更新一次（非每 6 小时，实际调度可能延迟；北京时间约 00:17、03:17、06:17、09:17、12:17、15:17、18:17、21:17）。输出 site/screen.png 与 site/status.json；图片直链不变。
