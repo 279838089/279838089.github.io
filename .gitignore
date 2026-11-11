@@ -1,6 +1,5 @@
 __pycache__/
 *.pyc
 .venv/
-assets/*.png
 site/screen.png
 site/status.json
