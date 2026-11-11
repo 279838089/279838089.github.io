@@ -171,6 +171,9 @@ def draw_board(now, weather, lunar, form, label):
     d.line((393, 64, 393, 189), fill='black', width=1)
 
     path = SPRITES / (form + '.png')
+    if not path.exists():
+        print('WARN: missing', form, 'sprite, falling back to normal', flush=True)
+        path = SPRITES / 'normal.png'
     if path.exists():
         with Image.open(path) as sprite_file:
             sprite = sprite_file.convert('RGBA')
