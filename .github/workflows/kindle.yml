@@ -8,7 +8,7 @@ on:
     # Backup trigger 30 minutes later if GitHub drops the first scheduled run.
     - cron: '47 1,4,7,10,13,16,19,22 * * *'
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: kindle-pages
   cancel-in-progress: false
@@ -27,6 +27,23 @@ jobs:
           python -m pip install -r requirements.txt
       - name: Get sprite assets
         run: python fetch_sprites.py
+      - name: Vendor sprite assets once
+        run: |
+          # First run fetches the three tiny original PNGs, commits them to the
+          # repository, and all following runs load them without network calls.
+          if test -s assets/normal.png && test -s assets/mega_x.png && test -s assets/mega_y.png; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -f assets/normal.png assets/mega_x.png assets/mega_y.png
+            if ! git diff --cached --quiet; then
+              git commit -m "Bundle Charizard sprite PNGs for reliable Kindle builds"
+              git push origin HEAD:master || echo "::warning::Could not push sprites; will retry on the next workflow run"
+            else
+              echo "All three sprite assets are already checked into Git"
+            fi
+          else
+            echo "::warning::One or more sprites are unavailable; will retry on the next run"
+          fi
       - name: Render image
         env:
           CITY: '深圳'
