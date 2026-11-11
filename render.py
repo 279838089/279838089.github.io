@@ -280,8 +280,6 @@ def draw_board(now, weather, lunar, form, label):
     d.rectangle((23, 721, 29, 775), fill='black')
     text(40, 724, '今日一句  /  DAILY NOTE', 14, bold=True)
     text(40, 749, QUOTES[now.toordinal() % len(QUOTES)], 21, bold=True, limit=515)
-    rule(780, weight=2)
-    text(24, 786, '数据生成于 ' + now.strftime('%m/%d %H:%M') + '  ·  天气 Open-Meteo  ·  黄历民俗参考', 12, limit=550)
     return img
 
 
