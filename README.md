@@ -1,25 +1,40 @@
-# Kindle 7 WP63GW 墨水屏自动看板
+# Kindle 7 WP63GW · 深圳墨水屏看板
 
-2014 Kindle 7（WP63GW / KT2）：600×800，黑白 PNG。原 Jekyll 博客已备份在 **backup-jekyll-20261111** 分支。
+600×800、1-bit 黑白 PNG，适配 2014 年入门 Kindle 7 (WP63GW / KT2)。
 
-- 展示页：https://279838089.github.io/
-- 图片：https://279838089.github.io/screen.png
-- JSON 状态：https://279838089.github.io/status.json
+- 展示页面：https://279838089.github.io/
+- 图片直链：https://279838089.github.io/screen.png
+- 构建状态：https://279838089.github.io/status.json
 
-## 喷火龙自动切换（北京时间）
-| 时段 | 形态 |
-|---|---|
-| 06:00—11:59 | 普通喷火龙 |
-| 12:00—17:59 | Mega 喷火龙 X |
-| 18:00—05:59 | Mega 喷火龙 Y |
+## 新版版面（屏幕从上到下）
 
-素材由 GitHub Actions 从 Pokémon Showdown 的 gen5 精灵图库获取，不调用 AI 图片生成。相关像素素材和宝可梦形象归原权利人，仅用于个人非商业展示。
+1. 北京时间、星期、农历、干支年
+2. 深圳当前天气、大号温度、体感温度、湿度、风速、降雨概率、UV、日落时间
+3. 早中晚喷火龙：06:00–11:59 普通喷火龙；12:00–17:59 Mega X；18:00–05:59 Mega Y
+4. 今天、明天、后天三天天气：天气现象、温度范围、降雨概率
+5. 当月 7 列完整月历，黑底白字标注今天
+6. 传统黄历宜忌（由 lunar_python 离线计算；民俗参考，非科学建议）
+7. 每日语录、构建更新时间
 
-## 部署
-仓库 Settings → Pages → Build and deployment → Source，选择 **GitHub Actions**。然后在 Actions 中运行 **Kindle dashboard** → **Run workflow**。每 3 小时生成一次图片，并覆盖早 6 点、午 12 点、晚 18 点的形态切换（计划 :17 UTC+8，实际可能延迟）。如果 Pages 没有设置为 GitHub Actions，部署任务可能失败。
+天气由 Open-Meteo API 获取；如果天气 API 临时不可用，看板仍可生成，天气位置显示“暂无数据”。农历/黄历由 lunar_python 本地生成，不调用黄历收费 API。
 
-## Kindle
-下载 `kindle/update.sh` 放到 Kindle 中，修改其中 DEST 为原有显示脚本所读图片路径；运行 `sh update.sh`。脚本仅负责下载替换，屏幕刷新继续使用现有程序。古老的 Kindle 系统 wget/curl 可能不支持现代 TLS，需要先在设备上验证。
+喷火龙像素素材来自 Pokémon Showdown 原有素材，并非 AI 生成；Pokémon 相关形象版权归原权利人，仅用于个人非商业展示。
 
-## 本地
-安装 fonts-noto-cjk，然后执行 `pip install -r requirements.txt && python fetch_sprites.py && python render.py`。设置 PREVIEW_HOUR=8/13/20 可以测试三种模式。OUTPUT_MODE=L 可以输出 16 级灰度（默认 1-bit）。
+## 发布
+
+GitHub Pages 设置为 **GitHub Actions**。工作流在 master 推送时触发，且大约每 3 小时定时更新一次（实际调度可能延迟）。输出 site/screen.png 与 site/status.json；图片直链不变。
+
+## Kindle 下载
+
+原有 Kindle 脚本继续从 https://279838089.github.io/screen.png 下载，然后交给现有显示脚本。老设备无法握手现代 TLS 时，需要兼容代理或 TLS 客户端。
+
+## 本地运行
+
+安装 Noto CJK 字体后执行：
+    pip install -r requirements.txt
+    python fetch_sprites.py
+    PREVIEW_HOUR=13 python render.py
+
+PREVIEW_HOUR 可为 8、13、20，分别测试三种喷火龙。OUTPUT_MODE=L 输出 8-bit 灰阶 PNG；默认 OUTPUT_MODE=1 为老 Kindle 更兼容的 1-bit PNG。
+
+旧版 Jekyll 博客仍保存在 backup-jekyll-20261111 分支。

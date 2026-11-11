@@ -1,1 +1,2 @@
 Pillow>=10,<13
+lunar_python>=1.4.8,<2
