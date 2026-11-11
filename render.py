@@ -158,7 +158,7 @@ def draw_board(now, weather, lunar, form, label):
 
     # Masthead
     text(24, 16, 'KINDLE   /   DAILY', 16, bold=True)
-    text(438, 15, '北京时间  ' + now.strftime('%H:%M'), 17, limit=138)
+    text(435, 15, 'SHENZHEN  /  E-INK', 14, bold=True, limit=143)
     rule(49, weight=2)
 
     # Date and pixel-art character
@@ -281,7 +281,7 @@ def draw_board(now, weather, lunar, form, label):
     text(40, 724, '今日一句  /  DAILY NOTE', 14, bold=True)
     text(40, 749, QUOTES[now.toordinal() % len(QUOTES)], 21, bold=True, limit=515)
     rule(780, weight=2)
-    text(24, 786, '更新 ' + now.strftime('%H:%M') + '  ·  天气 Open-Meteo  ·  黄历民俗参考', 12, limit=550)
+    text(24, 786, '数据生成于 ' + now.strftime('%m/%d %H:%M') + '  ·  天气 Open-Meteo  ·  黄历民俗参考', 12, limit=550)
     return img
 
 
