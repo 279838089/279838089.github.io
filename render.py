@@ -118,109 +118,170 @@ def get_almanac(now):
 
 
 def draw_board(now, weather, lunar, form, label):
+    """High-contrast editorial layout for 600x800 1-bit Kindle 7."""
     img = Image.new('RGB', (600, 800), 'white')
     d = ImageDraw.Draw(img)
-    font_path = next((p for p in [os.environ.get('FONT_PATH', '')] + FONT_PATHS
-                      if p and Path(p).is_file()), None)
-    if not font_path:
-        raise RuntimeError('Missing Chinese font. Install fonts-noto-cjk')
-    fonts = {}
-    def font(size):
-        if size not in fonts:
-            fonts[size] = ImageFont.truetype(font_path, size)
-        return fonts[size]
-    def text(x, y, value, size=18, max_width=None):
-        s = str(value)
-        ft = font(size)
-        if max_width:
-            while len(s) > 1 and d.textbbox((0, 0), s, font=ft)[2] > max_width:
-                s = s[:-2].rstrip('、 ') + '…'
-        d.text((x, y), s, fill='black', font=ft, anchor='lt')
-    def center(cx, y, value, size=18):
-        s = str(value)
-        width = d.textbbox((0,0),s,font=font(size))[2]
-        text(round(cx-width/2),y,s,size)
-    def line(y, thick=2):
-        d.line((28,y,572,y), fill='black', width=thick)
+    regular_candidates = [os.environ.get('FONT_PATH', '')] + FONT_PATHS
+    regular_path = next((p for p in regular_candidates if p and Path(p).is_file()), None)
+    if not regular_path:
+        raise RuntimeError('Missing Chinese font: install fonts-noto-cjk')
+    bold_candidates = [
+        '/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc',
+        '/usr/share/fonts/opentype/noto/NotoSerifCJK-Bold.ttc',
+        regular_path,
+    ]
+    bold_path = next((p for p in bold_candidates if Path(p).is_file()), regular_path)
+    cache = {}
 
-    weekdays = '一二三四五六日'
-    text(29, 13, f'{now.month}月{now.day}日  星期{weekdays[now.weekday()]}', 28)
-    text(457, 15, now.strftime('%H:%M'), 29)
-    text(30, 59, lunar['date'] + '  ·  ' + lunar['year'], 18, max_width=420)
-    text(515, 60, CITY, 19)
-    line(92, 3)
+    def ft(size, bold=False):
+        key = (size, bool(bold))
+        if key not in cache:
+            cache[key] = ImageFont.truetype(bold_path if bold else regular_path, size)
+        return cache[key]
 
-    text(30, 105, '深圳实时天气', 19)
-    text(30, 144, weather['temp'], 73)
-    text(195, 151, weather['desc'], 26, 190)
-    text(197, 198, f"{weather['low']}° ~ {weather['high']}°", 21)
+    def measure(value, size, bold=False):
+        bounds = d.textbbox((0, 0), str(value), font=ft(size, bold))
+        return bounds[2] - bounds[0]
 
-    sprite_path = SPRITES / (form + '.png')
-    if sprite_path.exists():
-        with Image.open(sprite_path) as sprite_file:
+    def text(x, y, value, size=18, fill='black', bold=False, limit=None):
+        string = str(value)
+        if limit:
+            while len(string) > 1 and measure(string, size, bold) > limit:
+                string = string[:-2].rstrip(' 、') + '…'
+        d.text((x, y), string, fill=fill, font=ft(size, bold), anchor='lt')
+
+    def centered(x, y, value, size=18, fill='black', bold=False):
+        text(round(x - measure(value, size, bold) / 2), y, value, size, fill, bold)
+
+    def rule(y, x0=23, x1=577, weight=1):
+        d.line((x0, y, x1, y), fill='black', width=weight)
+
+    # Masthead
+    text(24, 16, 'KINDLE   /   DAILY', 16, bold=True)
+    text(438, 15, '北京时间  ' + now.strftime('%H:%M'), 17, limit=138)
+    rule(49, weight=2)
+
+    # Date and pixel-art character
+    weekday = '一二三四五六日'[now.weekday()]
+    text(22, 58, str(now.day).zfill(2), 106, bold=True)
+    text(190, 75, f'{now.year} / {now.month:02d}', 27, bold=True)
+    text(192, 111, '星期' + weekday, 22)
+    text(190, 144, lunar['date'], 17, limit=190)
+    text(190, 169, lunar['year'], 15, limit=190)
+    d.line((393, 64, 393, 189), fill='black', width=1)
+
+    path = SPRITES / (form + '.png')
+    if path.exists():
+        with Image.open(path) as sprite_file:
             sprite = sprite_file.convert('RGBA')
-        bounds = sprite.getbbox()
-        if bounds:
-            sprite = sprite.crop(bounds)
-            factor = min(164 / sprite.width, 136 / sprite.height)
+        bound = sprite.getbbox()
+        if bound:
+            sprite = sprite.crop(bound)
+            factor = min(143 / sprite.width, 120 / sprite.height)
             size = (max(1, round(sprite.width * factor)), max(1, round(sprite.height * factor)))
             sprite = sprite.resize(size, Image.Resampling.NEAREST)
-            img.paste(sprite.convert('RGB'),
-                      (400 + (164 - size[0]) // 2, 112 + (136 - size[1]) // 2),
-                      sprite.getchannel('A'))
+            on_white = Image.new('RGBA', sprite.size, 'white')
+            on_white.alpha_composite(sprite)
+            bit_sprite = on_white.convert('RGB').convert('L').convert(
+                '1', dither=Image.Dither.FLOYDSTEINBERG).convert('RGB')
+            img.paste(bit_sprite, (410 + (145 - size[0]) // 2, 60 + (121 - size[1]) // 2))
     else:
-        print('Sprite missing:', sprite_path)
-    center(484, 254, label, 17)
+        centered(486, 112, '喷火龙', 20, bold=True)
+    centered(485, 180, label, 15, bold=True)
+    rule(204, weight=2)
 
-    text(30, 274, f"体感 {weather['feels']}°", 18, 120)
-    text(165, 274, f"湿度 {weather['humidity']}%", 18, 125)
-    text(305, 274, f"风速 {weather['wind']}km/h", 18, 260)
-    text(30, 301, f"降雨 {weather['rain']}%", 18, 145)
-    text(171, 301, f"紫外线 {weather['uv']}", 18, 138)
-    text(319, 301, f"日落 {weather['sunset']}", 18, 235)
-    line(337)
+    # Weather hero strip
+    d.rectangle((23, 212, 577, 409), fill='black')
+    text(38, 224, 'SHENZHEN  /  深圳天气', 18, fill='white', bold=True)
+    text(456, 226, weather['desc'], 21, fill='white', bold=True, limit=106)
+    text(35, 257, weather['temp'], 84, fill='white', bold=True)
+    text(231, 275, f"{weather['low']}°  —  {weather['high']}°", 25, fill='white')
+    text(233, 310, '体感 ' + weather['feels'] + '°   ·   风 ' + weather['wind'] + 'km/h',
+         16, fill='white', limit=325)
+    text(233, 340, weather['tip'].replace('出行建议：', '建议 · '),
+         16, fill='white', limit=326)
+    d.line((38, 369, 561, 369), fill='white', width=1)
+    metrics = [
+        ('湿度', weather['humidity'] + '%'),
+        ('降雨', weather['rain'] + '%'),
+        ('紫外线', weather['uv']),
+        ('日落', weather['sunset']),
+    ]
+    xcols = [39, 173, 304, 436]
+    for i, (name, value) in enumerate(metrics):
+        text(xcols[i], 375, name, 12, fill='white')
+        text(xcols[i] + 38, 372, value, 19, fill='white', bold=True, limit=89)
 
-    text(30, 346, '未来三天天气', 20)
-    text(336, 348, weather['tip'], 17, 236)
-    for i in range(3):
-        x = 30 + i * 183
-        f = weather['forecast'][i] if i < len(weather['forecast']) else None
-        if f:
-            text(x, 378, f['day'] + (' 今天' if i == 0 else ''), 18, 165)
-            text(x, 405, f['desc'], 19)
-            text(x, 429, f"{f['low']}~{f['high']}°  雨{f['rain']}%", 17, 171)
+    # Three-day forecast cards
+    text(24, 420, '未来三天', 19, bold=True)
+    text(145, 425, '/  3-DAY FORECAST', 13)
+    starts = [23, 209, 395]
+    headings = ['今天', '明天', '后天']
+    for i, xx in enumerate(starts):
+        d.rectangle((xx, 452, xx + 180, 528), outline='black', width=2 if i == 0 else 1)
+        day = weather['forecast'][i] if i < len(weather['forecast']) else None
+        if day:
+            text(xx + 10, 460, headings[i] + '  ' + day['day'], 16, bold=True, limit=160)
+            text(xx + 10, 486, f"{day['desc']}  {day['low']}~{day['high']}°", 17, limit=159)
+            text(xx + 10, 510, '降雨概率 ' + day['rain'] + '%', 13)
         else:
-            text(x, 378, '暂无数据', 18)
-    line(467)
+            text(xx + 10, 470, headings[i], 17, bold=True)
+            text(xx + 10, 500, '数据暂不可用', 14)
 
-    text(30, 475, f'{now.year}年{now.month}月 · 月历', 20)
-    text(397, 478, '● 为今天', 15)
-    columns = [67, 144, 221, 298, 375, 452, 529]
-    for idx, name in enumerate('一二三四五六日'):
-        center(columns[idx], 510, name, 17)
+    # Calendar and folk almanac
+    rule(541, weight=2)
+    text(24, 551, f'{now.year} 年 {now.month} 月', 20, bold=True)
+    text(382, 551, '今日宜忌', 20, bold=True)
+    d.line((370, 552, 370, 708), fill='black', width=1)
+    weekday_col = [44, 96, 148, 200, 252, 304, 350]
+    for i, ch in enumerate('一二三四五六日'):
+        centered(weekday_col[i], 582, ch, 15, bold=True)
+    d.line((23, 603, 358, 603), fill='black', width=1)
     weeks = calendar.monthcalendar(now.year, now.month)
-    for row in range(6):
-        days = weeks[row] if row < len(weeks) else [0] * 7
-        yy = 540 + row * 21
-        for c, day in enumerate(days):
-            if not day:
+    for row_index in range(6):
+        days = weeks[row_index] if row_index < len(weeks) else [0] * 7
+        y = 612 + 16 * row_index
+        for idx, day in enumerate(days):
+            if day == 0:
                 continue
+            cx = weekday_col[idx]
             if day == now.day:
-                d.rectangle((columns[c]-15,yy-1,columns[c]+15,yy+21), fill='black')
-                s = str(day)
-                width = d.textbbox((0,0),s,font=font(17))[2]
-                d.text((columns[c]-width/2,yy+1),s,fill='white',font=font(17),anchor='lt')
+                d.rectangle((cx - 13, y-1, cx + 13, y+18), fill='black')
+                centered(cx, y, str(day), 16, fill='white', bold=True)
             else:
-                center(columns[c], yy, str(day), 17)
-    line(671)
+                centered(cx, y, str(day), 16)
 
-    text(30, 679, '今日黄历 · 民俗参考', 18)
-    text(30, 705, '宜', 20)
-    text(72, 706, lunar['yi'], 17, 496)
-    text(30, 730, '忌', 20)
-    text(72, 730, lunar['ji'], 17, 496)
-    text(30, 753, '每日一句 · ' + QUOTES[now.toordinal() % len(QUOTES)], 17, 535)
-    text(30, 779, '更新 '+now.strftime('%H:%M')+'  ·  天气 Open-Meteo  ·  黄历仅供参考', 12, 535)
+    def almanac_row(y, mark, source):
+        d.rectangle((383, y+1, 408, y+27), fill='black')
+        centered(395, y+5, mark, 17, fill='white', bold=True)
+        words = str(source).replace('、', '  ').split()
+        lines = []
+        current = ''
+        for word in words:
+            candidate = (current + ' ' + word).strip()
+            if current and measure(candidate, 16) > 150:
+                lines.append(current)
+                current = word
+            else:
+                current = candidate
+        if current:
+            lines.append(current)
+        if not lines:
+            lines = ['暂无']
+        text(418, y+1, lines[0], 16, limit=155)
+        if len(lines) > 1:
+            text(418, y+25, ' '.join(lines[1:]), 16, limit=155)
+    almanac_row(587, '宜', lunar['yi'])
+    d.line((382, 647, 575, 647), fill='black', width=1)
+    almanac_row(656, '忌', lunar['ji'])
+    rule(713)
+
+    # Daily quote
+    d.rectangle((23, 721, 29, 775), fill='black')
+    text(40, 724, '今日一句  /  DAILY NOTE', 14, bold=True)
+    text(40, 749, QUOTES[now.toordinal() % len(QUOTES)], 21, bold=True, limit=515)
+    rule(780, weight=2)
+    text(24, 786, '更新 ' + now.strftime('%H:%M') + '  ·  天气 Open-Meteo  ·  黄历民俗参考', 12, limit=550)
     return img
 
 
