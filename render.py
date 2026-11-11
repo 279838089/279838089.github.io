@@ -181,6 +181,7 @@ def draw_board(now, weather, lunar, form, label):
     line(337)
 
     text(30, 346, '未来三天天气', 20)
+    text(336, 348, weather['tip'], 17, 236)
     for i in range(3):
         x = 30 + i * 183
         f = weather['forecast'][i] if i < len(weather['forecast']) else None
