@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#171d1a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="慢调 FM">
+  <meta name="description" content="把世界装进一台收音机。聆听真实广播、探索全球电台，收藏属于你的声音。">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon.png">
+  <link rel="stylesheet" href="./styles.css?v=1">
+  <title>慢调 FM · 一台有温度的收音机</title>
+</head>
+<body>
+  <svg class="svg-defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="icon-play" viewBox="0 0 24 24"><path d="m9 5 11 7-11 7z" fill="currentColor"/></symbol>
+    <symbol id="icon-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></symbol>
+    <symbol id="icon-skip" viewBox="0 0 24 24"><path d="m5 5 11 7-11 7z" fill="currentColor"/><path d="M19 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-heart" viewBox="0 0 24 24"><path d="M20.8 5.8a5.5 5.5 0 0 0-7.8 0L12 6.9l-1.1-1.1a5.5 5.5 0 1 0-7.8 7.8L12 22l8.8-8.4a5.5 5.5 0 0 0 0-7.8Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16 16 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-volume" viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M16 9a5 5 0 0 1 0 6m2.7-9a9 9 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" fill="none" stroke-width="1.8"/><path d="M12 6v6l4 2" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24"><path d="M5 5 19 19M19 5 5 19" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6" stroke="currentColor" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-icon">◖◗</span><div><strong>慢调 <em>FM</em></strong><small>THE LITTLE RADIO CLUB</small></div></div>
+      <button class="top-add icon-button" id="openAdd" type="button" aria-label="添加电台" title="添加自定义电台"><svg><use href="#icon-plus"/></svg></button>
+    </header>
+
+    <section class="intro">
+      <div class="eyebrow"><span class="eyebrow-line"></span> SLOW DOWN · TUNE IN</div>
+      <h1>听见，<em>此刻的世界。</em></h1>
+      <p>像从前一样，慢慢调到喜欢的声音。</p>
+    </section>
+
+    <section class="radio-housing" aria-label="复古调频收音机">
+      <div class="housing-head"><span class="model-name">M A N D I A O</span><span class="model-no">STEREO  ·  MODEL 001</span></div>
+      <div class="radio-display">
+        <div class="screen-top"><span class="onair"><span class="onair-dot"></span><span id="onAirText">READY TO TUNE</span></span><span>FM / DIGITAL</span></div>
+        <div class="screen-readout"><span id="frequency" class="frequency">97.1</span><span class="mhz">MHz<small id="frequencyBand">FM BAND</small></span></div>
+        <div class="tuner-container" id="tuner" role="slider" aria-label="调节 FM 频率" aria-valuemin="87.5" aria-valuemax="108" aria-valuenow="97.1" aria-valuetext="97.1 兆赫" tabindex="0">
+          <div class="tuner-rail" id="tunerRail"></div>
+          <div class="tuner-hairline"></div>
+          <div class="tuner-glass"></div>
+        </div>
+        <div class="band-ends"><span>87.5 MHz</span><span>轻触刻度或左右滑动调台</span><span>108 MHz</span></div>
+      </div>
+
+      <div class="current-station">
+        <div class="station-monogram" id="stationMonogram">97<span>FM</span></div>
+        <div class="station-meta">
+          <span class="micro-label">NOW PLAYING / 正在收听</span>
+          <strong id="stationName">深圳飞扬音乐</strong>
+          <span id="stationSubtitle">音乐 · 深圳</span>
+        </div>
+        <div id="equalizer" class="equalizer" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div class="housing-separator"></div>
+
+      <div class="physical-controls">
+        <div class="secondary-button-group">
+          <button type="button" id="previous" class="control-small" aria-label="上一电台" title="上一电台"><svg class="flip"><use href="#icon-skip"/></svg></button>
+          <span class="button-caption">PREV</span>
+        </div>
+        <div class="main-button-wrap"><button id="playPause" class="main-play" type="button" aria-label="播放"><svg id="mainPlayIcon"><use href="#icon-play"/></svg></button><span id="playCaption" class="button-caption">PRESS TO PLAY</span></div>
+        <div class="secondary-button-group">
+          <button type="button" id="next" class="control-small" aria-label="下一电台" title="下一电台"><svg><use href="#icon-skip"/></svg></button>
+          <span class="button-caption">NEXT</span>
+        </div>
+      </div>
+      <div class="radio-footer">
+        <div class="volume-control"><svg><use href="#icon-volume"/></svg><input id="volume" type="range" min="0" max="100" step="1" value="80" aria-label="音量"><span id="volumeValue">80%</span></div>
+        <button id="sleepButton" class="sleep-button" type="button" aria-label="设置定时关闭"><svg><use href="#icon-clock"/></svg><span id="sleepLabel">睡眠定时</span></button>
+      </div>
+      <div class="grille" aria-hidden="true"></div>
+      <div class="screws"><i></i><i></i></div>
+    </section>
+
+    <section class="list-section">
+      <div class="section-heading"><div><span class="eyebrow dark">PICK YOUR FREQUENCY</span><h2>找到你的频道<span class="heading-dot">.</span></h2></div><span class="little-wave">〰</span></div>
+      <div class="tabs" role="tablist" aria-label="电台分类">
+        <button class="tab active" data-tab="featured" role="tab" aria-selected="true">精选频道</button>
+        <button class="tab" data-tab="explore" role="tab" aria-selected="false">探索全球</button>
+        <button class="tab" data-tab="favorites" role="tab" aria-selected="false">我的收藏</button>
+      </div>
+      <div class="explore-tools" id="exploreTools" hidden>
+        <label class="search-box"><svg><use href="#icon-search"/></svg><input id="search" type="search" placeholder="搜索全球电台、城市或音乐..." autocomplete="off" enterkeyhint="search"><span>↵</span></label>
+        <div class="search-suggestions"><button type="button" data-query="中国">中国</button><button type="button" data-query="Hong Kong">香港</button><button type="button" data-query="Japan">日本</button><button type="button" data-query="Jazz">Jazz</button><button type="button" data-query="BBC">BBC</button></div>
+      </div>
+      <div id="stationList" class="station-list" aria-live="polite"></div>
+      <div class="list-footer"><span id="listCount">4 STATIONS AVAILABLE</span><button type="button" id="addBottom">＋ 添加你自己的电台</button></div>
+    </section>
+
+    <footer class="page-footer"><span>MADE FOR SLOW MOMENTS</span><span>静下来，世界就有了声音。</span></footer>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog id="addDialog" class="dialog">
+    <form id="addForm" method="dialog" novalidate>
+      <div class="dialog-top"><div><span class="micro-label">MAKE IT YOURS</span><h2>添加电台</h2></div><button type="button" class="icon-button close-dialog" aria-label="关闭"><svg><use href="#icon-close"/></svg></button></div>
+      <p>支持 HTTPS MP3 / AAC / M3U8 音频直播流，也可粘贴 M3U 播放列表内容批量导入。</p>
+      <label>电台名称 <input id="customName" placeholder="例如：我的音乐电台" maxlength="60"></label>
+      <label>FM 频率（选填） <input id="customFreq" type="number" inputmode="decimal" placeholder="例如：98.6" min="87.5" max="108" step="0.1"></label>
+      <label>播放地址或 M3U 文本 <textarea id="customUrl" rows="4" placeholder="https://example.com/live.m3u8 或粘贴 #EXTM3U 开头的文本" required></textarea></label>
+      <p id="addError" class="form-error" aria-live="polite"></p>
+      <button type="submit" class="dialog-submit">保存电台 <svg><use href="#icon-arrow"/></svg></button>
+    </form>
+  </dialog>
+
+  <audio id="radioAudio" preload="none" playsinline></audio>
+  <script src="./app.js?v=1" defer></script>
+</body>
+</html>

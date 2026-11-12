@@ -1,0 +1,26 @@
+{
+  "id": "./",
+  "name": "慢调 FM · 有温度的收音机",
+  "short_name": "慢调 FM",
+  "description": "一个丝滑、简洁、复古的网络收音机。真实广播与全球电台。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#171d1a",
+  "theme_color": "#171d1a",
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
