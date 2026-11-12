@@ -1,0 +1,37 @@
+name: Radio PWA checks
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'site/radio/**'
+      - '.github/workflows/radio-checks.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check site/radio/app.js
+          node --check site/radio/sw.js
+      - name: Validate static app
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          root = pathlib.Path('site/radio')
+          manifest = json.loads((root/'manifest.webmanifest').read_text())
+          assert manifest['start_url'] == './'
+          for p in ('index.html','styles.css','app.js','sw.js','icon.svg','icon.png','manifest.webmanifest'):
+              assert (root/p).is_file(), p
+              assert (root/p).stat().st_size > 0, p
+          html=(root/'index.html').read_text()
+          for p in ('styles.css','app.js','sw.js','icon.png'):
+              assert p in html or p == 'sw.js', p
+          print('Radio PWA static checks passed')
+          PY

@@ -14,6 +14,7 @@
   const state = {
     custom:Array.isArray(saved.custom) ? saved.custom.filter(validStation).slice(0,100) : [],
     favorites:new Set(Array.isArray(saved.favorites) ? saved.favorites : []),
+    remotes:Array.isArray(saved.remotes) ? saved.remotes.filter(validStation).slice(0,100) : [],
     volume:Math.max(0,Math.min(1,Number.isFinite(saved.volume)?saved.volume:.8)),
     freq:typeof saved.freq === 'number' ? clamp(saved.freq) : 97.1,
     current:null, tab:'featured', results:[], searching:false,
@@ -36,7 +37,7 @@
   function clamp(f){return Math.max(MIN,Math.min(MAX,Math.round(f*10)/10));}
   function validStation(s){return s && typeof s.name==='string' && Array.isArray(s.urls) && s.urls.some(isSecureUrl);}
   function isSecureUrl(u){try{const a=new URL(u);return a.protocol==='https:';}catch(_){return false;}}
-  function save(){try{localStorage.setItem(KEY,JSON.stringify({custom:state.custom,favorites:[...state.favorites],volume:state.volume,freq:state.freq,lastId:state.current?.id||state.preferredId}));}catch(_){}}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify({custom:state.custom,remotes:state.remotes,favorites:[...state.favorites],volume:state.volume,freq:state.freq,lastId:state.current?.id||state.preferredId}));}catch(_){}}
   function stations(){return [...BUILTIN,...state.custom];}
   function freqString(f){return f==null?'NET':Number(f).toFixed(1);}
   function encode(s){return String(s||'').replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -146,7 +147,7 @@
     if(autoplay&&s)start();
   }
   function stepStation(delta){
-    const list=stations().filter(s=>s.freq!=null).sort((a,b)=>a.freq-b.freq);
+    const list=[...stations(),...state.remotes].filter(s=>s.freq!=null).sort((a,b)=>a.freq-b.freq);
     if(!list.length)return;
     const index=list.findIndex(s=>s.id===state.current?.id);
     const next=list[(index+delta+list.length)%list.length]||list[0];
@@ -199,7 +200,7 @@
   });
   function renderList(){
     let items=state.tab==='featured'?stations():state.tab==='favorites'?
-       [...stations(),...state.results].filter(s=>state.favorites.has(s.id)):state.results;
+       [...stations(),...state.remotes,...state.results].filter(s=>state.favorites.has(s.id)):state.results;
     const unique=new Map(items.map(s=>[s.id,s]));items=[...unique.values()];
     const list=$('stationList');
     if(!items.length){
@@ -220,8 +221,8 @@
   }
   $('stationList').addEventListener('click',(e)=>{
     const fav=e.target.closest('[data-fav]');
-    if(fav){const id=fav.dataset.fav;if(state.favorites.has(id))state.favorites.delete(id);else state.favorites.add(id);save();renderList();return;}
-    const card=e.target.closest('[data-id]');if(card){const s=[...stations(),...state.results].find(s=>s.id===card.dataset.id);if(s)selectStation(s,true);}
+    if(fav){const id=fav.dataset.fav;if(state.favorites.has(id)){state.favorites.delete(id);state.remotes=state.remotes.filter(s=>s.id!==id);}else{state.favorites.add(id);const remote=state.results.find(s=>s.id===id);if(remote&&!state.remotes.some(s=>s.id===id))state.remotes.push(remote);}save();renderList();return;}
+    const card=e.target.closest('[data-id]');if(card){const s=[...stations(),...state.remotes,...state.results].find(s=>s.id===card.dataset.id);if(s)selectStation(s,true);}
   });
   $('stationList').addEventListener('keydown',(e)=>{if(e.target.matches('[data-id]')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();e.target.click();}});
   $('playPause').addEventListener('click',()=>{state.wantsPlay?pause():start();});
@@ -306,7 +307,7 @@
     state.custom.push(...added.slice(0,count));state.favorites.add(added[0].id);save();renderList();dialog.close();$('addForm').reset();uiMessage('已添加 '+count+' 个自定义电台');
     selectStation(added[0],false);
   });
-  const first=stations().find(s=>s.id===state.preferredId)||BUILTIN[0];
+  const first=[...stations(),...state.remotes].find(s=>s.id===state.preferredId)||BUILTIN[0];
   state.current=first;
   if(first.freq!=null)state.freq=first.freq;
   displayFrequency(first.freq!=null?first.freq:state.freq,first.freq==null);displayStation(first);setStatus('paused');renderList();updateMediaSession(first);
