@@ -4,9 +4,8 @@ on:
   push:
     branches: [master]
   schedule:
-    - cron: '17 1,4,7,10,13,16,19,22 * * *'
-    # Backup trigger 30 minutes later if GitHub drops the first scheduled run.
-    - cron: '47 1,4,7,10,13,16,19,22 * * *'
+    # Once each hour at minute 17 (UTC; same minute in Beijing time).
+    - cron: '17 * * * *'
 permissions:
   contents: write
 concurrency:
