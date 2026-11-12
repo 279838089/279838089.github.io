@@ -39,3 +39,28 @@ rows.sort(key=lambda x:(not x["ok"],x["station"]))
 print("RADIO_PROBE_START")
 print(json.dumps({"checked":len(rows),"good":sum(r["ok"] for r in rows),"stations":len(GROUPS),"results":rows},ensure_ascii=False))
 print("RADIO_PROBE_END")
+
+
+# Strict second pass: verify codecs are recognized by ffprobe, not merely HTTP 200.
+import subprocess
+decode_tasks=[(name,urls[0]) for name,urls in GROUPS if name not in {"澳门 FM100.7","NHK World 日本"}]
+def decode(task):
+    name,url=task
+    try:
+        p=subprocess.run(
+            ["ffprobe","-hide_banner","-v","error","-rw_timeout","8000000",
+             "-probesize","32768","-analyzeduration","1500000","-show_entries",
+             "stream=codec_name,codec_type","-of","json",url],
+            capture_output=True,text=True,timeout=13)
+        try:data=json.loads(p.stdout)
+        except ValueError:data={}
+        streams=data.get("streams",[])
+        codecs=[x.get("codec_name","") for x in streams if x.get("codec_type")=="audio"]
+        return {"name":name,"url":url,"decoded":bool(codecs),"codecs":codecs,"error":p.stderr[:150]}
+    except Exception as e:
+        return {"name":name,"url":url,"decoded":False,"error":str(e)[:130]}
+with concurrent.futures.ThreadPoolExecutor(max_workers=12) as pool:
+    decoded=list(pool.map(decode,decode_tasks))
+print("RADIO_DECODE_START")
+print(json.dumps({"tested":len(decoded),"decoded":sum(x["decoded"] for x in decoded),"results":decoded},ensure_ascii=False))
+print("RADIO_DECODE_END")
