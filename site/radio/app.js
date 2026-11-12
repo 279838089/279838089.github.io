@@ -3,11 +3,414 @@
   const $ = (id) => document.getElementById(id);
   const KEY = 'mandiao-radio-v1';
   const MIN = 87.5, MAX = 108, STEP = 12;
+  // Curated HTTPS audio endpoints, tested by GitHub Actions on 2026-11-12.
   const BUILTIN = [
-    {id:'sz-fy971',name:'深圳飞扬音乐',subtitle:'音乐 · 深圳',freq:97.1,genre:'音乐',city:'深圳',urls:['https://satellitepull.cnr.cn/live/wxszfy971/playlist.m3u8','https://ls.qingting.fm/live/1271.m3u8']},
-    {id:'sz-sh942',name:'深圳生活广播',subtitle:'生活 · 深圳',freq:94.2,genre:'生活',city:'深圳',urls:['https://satellitepull.cnr.cn/live/wxszsjcgb/playlist.m3u8','https://ls.qingting.fm/live/1273.m3u8']},
-    {id:'sz-xf898',name:'深圳先锋新闻',subtitle:'新闻 · 深圳',freq:89.8,genre:'新闻',city:'深圳',urls:['https://ls.qingting.fm/live/1270.m3u8']},
-    {id:'sz-kl1062',name:'深圳快乐交通',subtitle:'交通 · 深圳',freq:106.2,genre:'交通',city:'深圳',urls:['https://ls.qingting.fm/live/1272.m3u8']}
+    {
+      "id": "sz-fy971",
+      "name": "深圳飞扬音乐",
+      "subtitle": "音乐 · 深圳",
+      "freq": 97.1,
+      "genre": "音乐",
+      "city": "深圳",
+      "region": "深圳",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/1271/64k.mp3",
+        "https://lhttp.qingting.fm/live/1271/64k.mp3",
+        "https://satellitepull.cnr.cn/live/wxszfy971/playlist.m3u8"
+      ]
+    },
+    {
+      "id": "sz-sh942",
+      "name": "深圳生活广播",
+      "subtitle": "生活 · 深圳",
+      "freq": 94.2,
+      "genre": "生活",
+      "city": "深圳",
+      "region": "深圳",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/1273/64k.mp3",
+        "https://lhttp.qingting.fm/live/1273/64k.mp3"
+      ]
+    },
+    {
+      "id": "sz-xf898",
+      "name": "深圳先锋新闻",
+      "subtitle": "新闻 · 深圳",
+      "freq": 89.8,
+      "genre": "新闻",
+      "city": "深圳",
+      "region": "深圳",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/1270/64k.mp3",
+        "https://lhttp.qingting.fm/live/1270/64k.mp3"
+      ]
+    },
+    {
+      "id": "sz-kl1062",
+      "name": "深圳快乐交通",
+      "subtitle": "交通 · 深圳",
+      "freq": 106.2,
+      "genre": "交通",
+      "city": "深圳",
+      "region": "深圳",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/1272/64k.mp3",
+        "https://lhttp.qingting.fm/live/1272/64k.mp3",
+        "https://lhttp.qtfm.cn/live/1286/64k.mp3"
+      ]
+    },
+    {
+      "id": "sz-lg991",
+      "name": "深圳龙岗星光",
+      "subtitle": "综合 · 深圳",
+      "freq": 99.1,
+      "genre": "综合",
+      "city": "深圳",
+      "region": "深圳",
+      "urls": [
+        "https://lhttp.qingting.fm/live/20160/64k.mp3",
+        "https://lhttp.qtfm.cn/live/20160/64k.mp3"
+      ]
+    },
+    {
+      "id": "gd-music",
+      "name": "广东音乐之声",
+      "subtitle": "音乐 · 广东",
+      "freq": null,
+      "genre": "音乐",
+      "city": "广东",
+      "region": "广东",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/1260/64k.mp3",
+        "https://lhttp.qingting.fm/live/1260/64k.mp3"
+      ]
+    },
+    {
+      "id": "gd-sports",
+      "name": "广东文体广播",
+      "subtitle": "文体 · 广东",
+      "freq": null,
+      "genre": "文体",
+      "city": "广东",
+      "region": "广东",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/471/64k.mp3"
+      ]
+    },
+    {
+      "id": "gd-huaiji",
+      "name": "怀集音乐之声",
+      "subtitle": "音乐 · 肇庆",
+      "freq": null,
+      "genre": "音乐",
+      "city": "肇庆",
+      "region": "广东",
+      "urls": [
+        "https://lhttp.qingting.fm/live/4804/64k.mp3",
+        "https://lhttp.qtfm.cn/live/4804/64k.mp3"
+      ]
+    },
+    {
+      "id": "gd-huizhou",
+      "name": "惠州音乐广播",
+      "subtitle": "音乐 · 惠州",
+      "freq": null,
+      "genre": "音乐",
+      "city": "惠州",
+      "region": "广东",
+      "urls": [
+        "https://lhttp.qingting.fm/live/5021523/64k.mp3"
+      ]
+    },
+    {
+      "id": "gd-zhuhai875",
+      "name": "珠海交通 87.5",
+      "subtitle": "交通 · 珠海",
+      "freq": 87.5,
+      "genre": "交通",
+      "city": "珠海",
+      "region": "广东",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/1275/64k.mp3"
+      ]
+    },
+    {
+      "id": "gd-zhuhai951",
+      "name": "珠海先锋 95.1",
+      "subtitle": "新闻 · 珠海",
+      "freq": 95.1,
+      "genre": "新闻",
+      "city": "珠海",
+      "region": "广东",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/1274/64k.mp3"
+      ]
+    },
+    {
+      "id": "gd-guangzhou1061",
+      "name": "广州交通 106.1",
+      "subtitle": "交通 · 广州",
+      "freq": 106.1,
+      "genre": "交通",
+      "city": "广州",
+      "region": "广东",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/4955/64k.mp3"
+      ]
+    },
+    {
+      "id": "gd-guangzhou962",
+      "name": "广州新闻 96.2",
+      "subtitle": "新闻 · 广州",
+      "freq": 96.2,
+      "genre": "新闻",
+      "city": "广州",
+      "region": "广东",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/4848/64k.mp3"
+      ]
+    },
+    {
+      "id": "gd-liangguang",
+      "name": "两广之声",
+      "subtitle": "音乐 · 粤桂",
+      "freq": null,
+      "genre": "音乐",
+      "city": "粤桂",
+      "region": "广东",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/20500149/64k.mp3"
+      ]
+    },
+    {
+      "id": "cn-cnr1",
+      "name": "中国之声",
+      "subtitle": "新闻 · 全国",
+      "freq": null,
+      "genre": "新闻",
+      "city": "全国",
+      "region": "全国",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/15318317/64k.mp3",
+        "https://ngcdn001.cnr.cn/live/zgzs/index.m3u8"
+      ]
+    },
+    {
+      "id": "cn-cnr3",
+      "name": "中央音乐之声",
+      "subtitle": "音乐 · 全国",
+      "freq": null,
+      "genre": "音乐",
+      "city": "全国",
+      "region": "全国",
+      "urls": [
+        "https://ngcdn001.cnr.cn/live/yyzs/index.m3u8"
+      ]
+    },
+    {
+      "id": "cn-international",
+      "name": "国际新闻广播",
+      "subtitle": "新闻 · 全国",
+      "freq": null,
+      "genre": "新闻",
+      "city": "全国",
+      "region": "全国",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/20500172/64k.mp3"
+      ]
+    },
+    {
+      "id": "cn-dongting",
+      "name": "动听音乐台",
+      "subtitle": "音乐 · 全国",
+      "freq": null,
+      "genre": "音乐",
+      "city": "全国",
+      "region": "全国",
+      "urls": [
+        "https://lhttp-hw.qtfm.cn/live/5022107/64k.mp3"
+      ]
+    },
+    {
+      "id": "cn-500",
+      "name": "500首华语经典",
+      "subtitle": "网络音乐 · 全国",
+      "freq": null,
+      "genre": "网络音乐",
+      "city": "全国",
+      "region": "全国",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/5022308/64k.mp3"
+      ]
+    },
+    {
+      "id": "cn-jiangsu",
+      "name": "江苏经典流行",
+      "subtitle": "流行 · 江苏",
+      "freq": null,
+      "genre": "流行",
+      "city": "江苏",
+      "region": "全国",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/4938/64k.mp3"
+      ]
+    },
+    {
+      "id": "cn-wuhan",
+      "name": "武汉经典音乐",
+      "subtitle": "音乐 · 武汉",
+      "freq": null,
+      "genre": "音乐",
+      "city": "武汉",
+      "region": "全国",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/1297/64k.mp3"
+      ]
+    },
+    {
+      "id": "cn-sh101",
+      "name": "上海动感101",
+      "subtitle": "音乐 · 上海",
+      "freq": 101.7,
+      "genre": "音乐",
+      "city": "上海",
+      "region": "全国",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/274/64k.mp3"
+      ]
+    },
+    {
+      "id": "cn-shlove",
+      "name": "上海 Love Radio",
+      "subtitle": "音乐 · 上海",
+      "freq": 103.7,
+      "genre": "音乐",
+      "city": "上海",
+      "region": "全国",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/273/64k.mp3"
+      ]
+    },
+    {
+      "id": "cn-shclassic",
+      "name": "上海经典947",
+      "subtitle": "古典 · 上海",
+      "freq": 94.7,
+      "genre": "古典",
+      "city": "上海",
+      "region": "全国",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/267/64k.mp3"
+      ]
+    },
+    {
+      "id": "cn-beijing1039",
+      "name": "北京交通广播",
+      "subtitle": "交通 · 北京",
+      "freq": 103.9,
+      "genre": "交通",
+      "city": "北京",
+      "region": "全国",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/336/64k.mp3"
+      ]
+    },
+    {
+      "id": "cn-beijing876",
+      "name": "北京文艺广播",
+      "subtitle": "文艺 · 北京",
+      "freq": 87.6,
+      "genre": "文艺",
+      "city": "北京",
+      "region": "全国",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/333/64k.mp3"
+      ]
+    },
+    {
+      "id": "cn-beijing-news",
+      "name": "北京新闻广播",
+      "subtitle": "新闻 · 北京",
+      "freq": null,
+      "genre": "新闻",
+      "city": "北京",
+      "region": "全国",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/339/64k.mp3"
+      ]
+    },
+    {
+      "id": "hk-r1",
+      "name": "香港电台第一台",
+      "subtitle": "粤语 · 综合 · 香港",
+      "freq": null,
+      "genre": "粤语 · 综合",
+      "city": "香港",
+      "region": "港澳",
+      "urls": [
+        "https://rthkaudio1-lh.akamaihd.net/i/radio1_1@355864/master.m3u8"
+      ]
+    },
+    {
+      "id": "hk-r2",
+      "name": "香港电台第二台",
+      "subtitle": "粤语 · 音乐 · 香港",
+      "freq": null,
+      "genre": "粤语 · 音乐",
+      "city": "香港",
+      "region": "港澳",
+      "urls": [
+        "https://rthkaudio2-lh.akamaihd.net/i/radio2_1@355865/master.m3u8"
+      ]
+    },
+    {
+      "id": "hk-yue",
+      "name": "AsiaFM 亚洲粤语台",
+      "subtitle": "粤语 · 音乐 · 香港",
+      "freq": null,
+      "genre": "粤语 · 音乐",
+      "city": "香港",
+      "region": "港澳",
+      "urls": [
+        "https://lhttp.qtfm.cn/live/15318569/64k.mp3"
+      ]
+    },
+    {
+      "id": "hk-digital",
+      "name": "Digital Radio Hong Kong",
+      "subtitle": "音乐 · 香港",
+      "freq": null,
+      "genre": "音乐",
+      "city": "香港",
+      "region": "港澳",
+      "urls": [
+        "https://ice.digitalradiohk.net:8443/drhk"
+      ]
+    },
+    {
+      "id": "sg-933",
+      "name": "新加坡 YES 933",
+      "subtitle": "华语 · 音乐 · 新加坡",
+      "freq": 93.3,
+      "genre": "华语 · 音乐",
+      "city": "新加坡",
+      "region": "国际",
+      "urls": [
+        "https://22393.live.streamtheworld.com/YES933_PREM.aac"
+      ]
+    },
+    {
+      "id": "sg-972",
+      "name": "新加坡 LOVE 972",
+      "subtitle": "华语 · 音乐 · 新加坡",
+      "freq": 97.2,
+      "genre": "华语 · 音乐",
+      "city": "新加坡",
+      "region": "国际",
+      "urls": [
+        "https://28313.live.streamtheworld.com/LOVE972FM_PREM.aac"
+      ]
+    }
   ];
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (_) {}
@@ -17,7 +420,7 @@
     remotes:Array.isArray(saved.remotes) ? saved.remotes.filter(validStation).slice(0,100) : [],
     volume:Math.max(0,Math.min(1,Number.isFinite(saved.volume)?saved.volume:.8)),
     freq:typeof saved.freq === 'number' ? clamp(saved.freq) : 97.1,
-    current:null, tab:'featured', results:[], searching:false,
+    current:null, tab:'featured', featuredRegion:'全部', results:[], searching:false,
     status:'idle', wantsPlay:false, sourceIndex:0, session:0, hls:null,
     sleepEnd:0, sleepTimer:null, toastTimer:null, searchToken:0,
     preferredId:saved.lastId || 'sz-fy971'
@@ -81,6 +484,12 @@
     }catch(_){}
   }
   function cleanStream(){if(state.hls){try{state.hls.destroy();}catch(_){}state.hls=null;}audio.pause();audio.removeAttribute('src');audio.load();}
+  function updateSourceSwitch(){
+    const button=$('switchSource');
+    const count=state.current?.urls?.length||0;
+    button.hidden=count<2;
+    if(count>1)button.textContent='信号 '+(state.sourceIndex+1)+'/'+count+' · 切换';
+  }
   function pause(){
     state.wantsPlay=false;audio.pause();setStatus(state.current?'paused':'idle');
     if('mediaSession' in navigator)try{navigator.mediaSession.playbackState='paused';}catch(_){}
@@ -111,7 +520,8 @@
     if(!s||token!==state.session||!state.wantsPlay)return;
     const url=s.urls[idx];
     cleanStream();setStatus('loading');
-    const timeout=setTimeout(()=>onStreamFailure(token,'连接超时，请更换电台'),14000);
+    updateSourceSwitch();
+    const timeout=setTimeout(()=>onStreamFailure(token,'连接超时，已自动尝试备用线路'),11000);
     function settled(){clearTimeout(timeout);}
     const oldFailure=state.fail;state.fail=(reason)=>{settled();onStreamFailure(token,reason);};
     try{
@@ -141,9 +551,10 @@
   }
   function selectStation(s, autoplay){
     state.current=s;state.preferredId=s.id;state.session++;state.wantsPlay=false;cleanStream();setStatus(s?'paused':'idle');
+    state.sourceIndex=0;
     if(s&&s.freq!=null)state.freq=clamp(s.freq);
     displayFrequency(s&&s.freq!=null?s.freq:state.freq,!!(s&&s.freq==null));
-    displayStation(s);updateMediaSession(s);save();renderList();
+    displayStation(s);updateSourceSwitch();updateMediaSession(s);save();renderList();
     if(autoplay&&s)start();
   }
   function stepStation(delta){
@@ -199,7 +610,7 @@
     e.preventDefault();tune(next,true);
   });
   function renderList(){
-    let items=state.tab==='featured'?stations():state.tab==='favorites'?
+    let items=state.tab==='featured'?stations().filter(s=>state.featuredRegion==='全部'||s.region===state.featuredRegion||s.custom):state.tab==='favorites'?
        [...stations(),...state.remotes,...state.results].filter(s=>state.favorites.has(s.id)):state.results;
     const unique=new Map(items.map(s=>[s.id,s]));items=[...unique.values()];
     const list=$('stationList');
@@ -226,6 +637,13 @@
   });
   $('stationList').addEventListener('keydown',(e)=>{if(e.target.matches('[data-id]')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();e.target.click();}});
   $('playPause').addEventListener('click',()=>{state.wantsPlay?pause():start();});
+  $('switchSource').addEventListener('click',()=>{
+    if(!state.current||state.current.urls.length<2)return;
+    state.sourceIndex=(state.sourceIndex+1)%state.current.urls.length;
+    state.session++;state.wantsPlay=true;
+    connect(state.session);
+    uiMessage('已切换到信号 '+(state.sourceIndex+1)+' / '+state.current.urls.length);
+  });
   $('previous').addEventListener('click',()=>stepStation(-1));
   $('next').addEventListener('click',()=>stepStation(1));
   $('volume').addEventListener('input',(e)=>{state.volume=Number(e.target.value)/100;audio.volume=state.volume;$('volumeValue').textContent=e.target.value+'%';$('volume').style.setProperty('--vol',e.target.value+'%');save();});
@@ -237,8 +655,14 @@
     state.tab=btn.dataset.tab;
     document.querySelectorAll('[data-tab]').forEach(b=>{b.classList.toggle('active',b===btn);b.setAttribute('aria-selected',b===btn?'true':'false');});
     $('exploreTools').hidden=state.tab!=='explore';
+    $('featuredTools').hidden=state.tab!=='featured';
     renderList();
     if(state.tab==='explore'&&!state.results.length)searchGlobal('中国');
+  }));
+  document.querySelectorAll('[data-region]').forEach(btn=>btn.addEventListener('click',()=>{
+    state.featuredRegion=btn.dataset.region;
+    document.querySelectorAll('[data-region]').forEach(b=>b.classList.toggle('active',b===btn));
+    renderList();
   }));
   let searchDebounce;
   $('search').addEventListener('input',(e)=>{clearTimeout(searchDebounce);searchDebounce=setTimeout(()=>searchGlobal(e.target.value.trim()),390);});
@@ -310,6 +734,6 @@
   const first=[...stations(),...state.remotes].find(s=>s.id===state.preferredId)||BUILTIN[0];
   state.current=first;
   if(first.freq!=null)state.freq=first.freq;
-  displayFrequency(first.freq!=null?first.freq:state.freq,first.freq==null);displayStation(first);setStatus('paused');renderList();updateMediaSession(first);
+  displayFrequency(first.freq!=null?first.freq:state.freq,first.freq==null);displayStation(first);updateSourceSwitch();setStatus('paused');renderList();updateMediaSession(first);
   if('serviceWorker' in navigator&&location.protocol==='https:')window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 })();

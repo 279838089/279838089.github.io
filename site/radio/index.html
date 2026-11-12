@@ -11,7 +11,7 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="./icon.png">
-  <link rel="stylesheet" href="./styles.css?v=1">
+  <link rel="stylesheet" href="./styles.css?v=2">
   <title>慢调 FM · 一台有温度的收音机</title>
 </head>
 <body>
@@ -60,6 +60,7 @@
           <span class="micro-label">NOW PLAYING / 正在收听</span>
           <strong id="stationName">深圳飞扬音乐</strong>
           <span id="stationSubtitle">音乐 · 深圳</span>
+          <button id="switchSource" class="switch-source" type="button" hidden>信号 1/2 · 切换</button>
         </div>
         <div id="equalizer" class="equalizer" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
       </div>
@@ -91,6 +92,7 @@
         <button class="tab" data-tab="explore" role="tab" aria-selected="false">探索全球</button>
         <button class="tab" data-tab="favorites" role="tab" aria-selected="false">我的收藏</button>
       </div>
+      <div id="featuredTools" class="featured-tools" aria-label="精选电台区域筛选"><button data-region="全部" class="active">全部</button><button data-region="深圳">深圳</button><button data-region="广东">广东</button><button data-region="全国">全国</button><button data-region="港澳">港澳</button><button data-region="国际">国际</button></div>
       <div class="explore-tools" id="exploreTools" hidden>
         <label class="search-box"><svg><use href="#icon-search"/></svg><input id="search" type="search" placeholder="搜索全球电台、城市或音乐..." autocomplete="off" enterkeyhint="search"><span>↵</span></label>
         <div class="search-suggestions"><button type="button" data-query="中国">中国</button><button type="button" data-query="Hong Kong">香港</button><button type="button" data-query="Japan">日本</button><button type="button" data-query="Jazz">Jazz</button><button type="button" data-query="BBC">BBC</button></div>
@@ -117,6 +119,6 @@
   </dialog>
 
   <audio id="radioAudio" preload="none" playsinline></audio>
-  <script src="./app.js?v=1" defer></script>
+  <script src="./app.js?v=2" defer></script>
 </body>
 </html>
